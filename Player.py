@@ -28,7 +28,7 @@ class Player(pygame.sprite.Sprite):
             self.reset_rect(self.rect.x - int(scaler/2), self.rect.y - int(scaler/2))
         elif up_or_down == -1:
             # if the image is wider than it's original width
-            if self.image.get_width() > 32:
+            if self.image.get_width() > self.image_copy.get_width():
                 scaled = pygame.transform.scale(self.image_copy, (self.image.get_width() - scaler, self.image.get_height() - scaler))
                 self.image = scaled
                 self.reset_rect(self.rect.x + int(scaler/2), self.rect.y + int(scaler/2))

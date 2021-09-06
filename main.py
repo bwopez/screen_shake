@@ -50,15 +50,14 @@ def main_game():
             camera.screen_zoom = 8
         if keys[K_p]:
             # do blur
-            # TODO: change this to a with Image.open("images/second_character.png") as second_char_img
             # TODO: change this so that we scale up the image first and then blur it
-            second_char_img = Image.open("images/second_character.png")
-            blurred = second_char_img.filter(ImageFilter.BLUR)
-            blurred_img = pygame.image.fromstring(blurred.tobytes(), blurred.size, blurred.mode).convert_alpha()
+            with Image.open("images/second_character.png") as second_char_img:
+                blurred = second_char_img.filter(ImageFilter.BLUR)
+                blurred_img = pygame.image.fromstring(blurred.tobytes(), blurred.size, blurred.mode).convert_alpha()
 
-            blurred_img_scaled = pygame.transform.scale(blurred_img, (second_char.image.get_width(), second_char.image.get_height()))
-            second_char.image = blurred_img_scaled
-            second_char.reset_rect(second_char.rect.x, second_char.rect.y)
+                blurred_img_scaled = pygame.transform.scale(blurred_img, (second_char.image.get_width(), second_char.image.get_height()))
+                second_char.image = blurred_img_scaled
+                second_char.reset_rect(second_char.rect.x, second_char.rect.y)
         if keys[K_u]:
             second_char.image = pygame.image.load("images/second_character.png").convert_alpha()
 
