@@ -50,15 +50,18 @@ def main_game():
             camera.screen_zoom = 8
         if keys[K_p]:
             # do blur
-            second_char_image_string = pygame.image.tostring(second_char.image, "RGBA", False)
-            image_bytes = Image.frombytes("RGBA", (second_char.image.get_width(), second_char.image.get_height()), second_char_image_string)
-            blurred = image_bytes.filter(ImageFilter.BLUR)
-            blurred_image = pygame.image.fromstring(blurred.tobytes(), blurred.size, blurred.mode).convert_alpha()
-            second_char.image = blurred_image
-            second_char.reset_rect(second_char.rect.x, second_char.rect.y)
+            # second_char_image_string = pygame.image.tostring(second_char.image, "RGBA", False)
+            # image_bytes = Image.frombytes("RGBA", (second_char.image.get_width(), second_char.image.get_height()), second_char_image_string)
+            # blurred = image_bytes.filter(ImageFilter.BLUR)
+            # blurred_image = pygame.image.fromstring(blurred.tobytes(), blurred.size, blurred.mode).convert_alpha()
+            # second_char.image = blurred_image
+            # second_char.reset_rect(second_char.rect.x, second_char.rect.y)
+
+            second_char.blur()
         if keys[K_u]:
-            scaled = pygame.transform.scale(second_char.image_copy, (second_char.image.get_width(), second_char.image.get_height()))
-            second_char.image = scaled
+            # scaled = pygame.transform.scale(second_char.image_copy, (second_char.image.get_width(), second_char.image.get_height()))
+            # second_char.image = scaled
+            second_char.unblur()
 
         # scale the second player image up and down
         # b for big, l for small

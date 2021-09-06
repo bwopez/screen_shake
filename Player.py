@@ -1,6 +1,8 @@
 import pygame
 from pygame.locals import *
 
+from PIL import Image, ImageFilter
+
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, player_image,  x=0, y=0):
@@ -34,6 +36,21 @@ class Player(pygame.sprite.Sprite):
                 self.reset_rect(self.rect.x + int(scaler/2), self.rect.y + int(scaler/2))
         else:
             self.reset_rect(self.rect.x, self.rect.y)
+    
+    def blur(self):
+        # TODO: this can probably be cleaned up
+        image_string = pygame.image.tostring(self.image, "RGBA", False)
+        image_bytes = Image.frombytes("RGBA", (self.image.get_width(), self.image.get_height()), image_string)
+        blurred = image_bytes.filter(ImageFilter.BLUR)
+        blurred_image = pygame.image.fromstring(blurred.tobytes(), blurred.size, blurred.mode).convert_alpha()
+        self.image = blurred_image
+        self.scale(0)
+
+    def unblur(self):
+        # TODO: this can probably be cleaned up
+        scaled = pygame.transform.scale(self.image_copy, (self.image.get_width(), self.image.get_height()))
+        self.image = scaled
+        self.scale(0)
 
     def draw(self, canvas, camera):
         # use this one if you want jiggle physics on your player movement   
