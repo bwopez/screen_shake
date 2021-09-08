@@ -68,9 +68,12 @@ class Player(pygame.sprite.Sprite):
         else:
             if keys[K_a] or keys[K_LEFT]:
                 # self.move(win, "left")
+                flipped = pygame.transform.flip(self.image_copy, True, False)
+                self.image = pygame.transform.scale(flipped, (self.image.get_height(), self.image.get_width()))
                 self.move("left")
             if keys[K_d] or keys[K_RIGHT]:
                 # self.move(win, "right")
+                self.image = pygame.transform.scale(self.image_copy, (self.image.get_width(), self.image.get_height()))
                 self.move("right")
         if (keys[K_w] or keys[K_UP]) and (keys[K_s] or keys[K_DOWN]):
             # stopping holding down up and down

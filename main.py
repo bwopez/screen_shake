@@ -15,7 +15,8 @@ def main_game():
     win = pygame.display.set_mode((DISPLAY_W, DISPLAY_H))
     pygame.display.set_caption("new_game")
 
-    player = Player("images/player.png", 100, 100)
+    # player = Player("images/player.png", 100, 100)
+    player = Player("images/new_player1.png", 100, 100)
 
     # TODO: Create a bad guys class and add a damage on collision 
     buildings = []
@@ -50,21 +51,12 @@ def main_game():
             camera.screen_zoom = 8
         if keys[K_p]:
             # do blur
-            # second_char_image_string = pygame.image.tostring(second_char.image, "RGBA", False)
-            # image_bytes = Image.frombytes("RGBA", (second_char.image.get_width(), second_char.image.get_height()), second_char_image_string)
-            # blurred = image_bytes.filter(ImageFilter.BLUR)
-            # blurred_image = pygame.image.fromstring(blurred.tobytes(), blurred.size, blurred.mode).convert_alpha()
-            # second_char.image = blurred_image
-            # second_char.reset_rect(second_char.rect.x, second_char.rect.y)
-
             second_char.blur()
         if keys[K_u]:
-            # scaled = pygame.transform.scale(second_char.image_copy, (second_char.image.get_width(), second_char.image.get_height()))
-            # second_char.image = scaled
             second_char.unblur()
 
         # scale the second player image up and down
-        # b for big, l for small
+        # b for big, l for littler
         if keys[K_b]:
             second_char.scale(1)
         if keys[K_l]:
@@ -83,7 +75,7 @@ def main_game():
             camera.zoom_and_blit(10, canvas, win)
         else:
             win.blit(canvas, (0, 0))
-
+            
         clock.tick(60)
         pygame.display.update()
     
