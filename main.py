@@ -33,22 +33,20 @@ def main_game():
     camera.setmethod(follow)
 
     second_char = Player("images/second_character.png", 0, 0)
-    image_scaler = 15
-    sound_playing = False
-    sound_obj = pygame.mixer.Sound("sounds/running.mp3")
 
     running = True
     while running:
         camera.shake_and_zoom_work()
 
         keys = pygame.key.get_pressed()
-        for event in pygame.event.get():
+        all_events = pygame.event.get()
+        for event in all_events:
             if event.type == QUIT:
                 running = False
         if keys[K_ESCAPE]:
             running = False
         
-        player.update(keys)
+        player.update(keys, all_events)
         # TODO: change this to a "taking damage" trigger
         if keys[K_1]:
         #     # setting screen_shake and screen_zoom makes a screen flexing effect
