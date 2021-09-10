@@ -15,7 +15,8 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = x 
         self.rect.y = y 
 
-        self.move_speed = 5
+        self.move_speed = 3
+        self.dash_speed = 10
 
     def reset_rect(self, x, y):
         self.rect = self.image.get_rect()
@@ -60,8 +61,10 @@ class Player(pygame.sprite.Sprite):
         canvas.blit(self.image, (self.rect.x - camera.offset.x, self.rect.y - camera.offset.y))
 
     # TODO: maybe name this move_input() or something
+    # TODO: add a dash
     def update(self, keys):
         # this controls the movement of the character
+        dash = 0
         if (keys[K_a] or keys[K_LEFT]) and (keys[K_d] or keys[K_RIGHT]):
             # stopping holding down left and right
             pass
@@ -70,29 +73,37 @@ class Player(pygame.sprite.Sprite):
                 # self.move(win, "left")
                 flipped = pygame.transform.flip(self.image_copy, True, False)
                 self.image = pygame.transform.scale(flipped, (self.image.get_height(), self.image.get_width()))
-                self.move("left")
+                if keys[K_SPACE]:
+                    dash = self.dash_speed
+                self.move("left", dash)
             if keys[K_d] or keys[K_RIGHT]:
                 # self.move(win, "right")
                 self.image = pygame.transform.scale(self.image_copy, (self.image.get_width(), self.image.get_height()))
-                self.move("right")
+                if keys[K_SPACE]:
+                    dash = self.dash_speed
+                self.move("right", dash)
         if (keys[K_w] or keys[K_UP]) and (keys[K_s] or keys[K_DOWN]):
             # stopping holding down up and down
             pass
         else:
             if keys[K_w] or keys[K_UP]:
                 # self.move(win, "up")
-                self.move("up")
+                if keys[K_SPACE]:
+                    dash = self.dash_speed
+                self.move("up", dash)
             if keys[K_s] or keys[K_DOWN]:
                 # self.move(win, "down")
-                self.move("down")
+                if keys[K_SPACE]:
+                    dash = self.dash_speed
+                self.move("down", dash)
 
     # def move(self, win, direction):
-    def move(self, direction):
+    def move(self, direction, extra_speed):
         if direction == "left":
-            self.rect.x -= self.move_speed
+            self.rect.x -= (self.move_speed + extra_speed)
         if direction == "right":
-            self.rect.x += self.move_speed
+            self.rect.x += (self.move_speed + extra_speed)
         if direction == "up":
-            self.rect.y -= self.move_speed
+            self.rect.y -= (self.move_speed + extra_speed)
         if direction == "down":
-            self.rect.y += self.move_speed
+            self.rect.y += (self.move_speed + extra_speed)

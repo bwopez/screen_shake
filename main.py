@@ -7,6 +7,11 @@ from Player import Player
 from Camera import *
 
 
+def add_shake(camera):
+        camera.screen_shake = 8
+        camera.screen_zoom = 8    
+
+
 def main_game():
     pygame.init()
     clock = pygame.time.Clock()
@@ -45,10 +50,9 @@ def main_game():
         
         player.update(keys)
         # TODO: change this to a "taking damage" trigger
-        if keys[K_SPACE]:
-            # setting screen_shake and screen_zoom makes a screen flexing effect
-            camera.screen_shake = 8
-            camera.screen_zoom = 8
+        if keys[K_1]:
+        #     # setting screen_shake and screen_zoom makes a screen flexing effect
+            add_shake(camera)
         if keys[K_p]:
             # do blur
             second_char.blur()
