@@ -67,8 +67,6 @@ class Player(pygame.sprite.Sprite):
 
     # TODO: maybe name this move_input() or something
     # TODO: refactor this to use helper functions
-    # TODO: both dash charges are being used if two directions are being held
-        # at the same time
     def update(self, keys, events):
         # this controls the movement of the character
         dash = 0
