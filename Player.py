@@ -1,6 +1,8 @@
 import pygame
 from pygame.locals import *
 
+from PIL import Image, ImageFilter
+
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, player_image,  x=0, y=0):
@@ -13,7 +15,13 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = x 
         self.rect.y = y 
 
-        self.move_speed = 5
+        self.move_speed = 3
+        self.dash_speed = 20
+        self.cooldown = 0
+
+        self.max_dash_charges = 2
+        # self.dash_charges_used = 0
+        self.dash_cooldowns = []
 
     def reset_rect(self, x, y):
         self.rect = self.image.get_rect()
@@ -34,6 +42,21 @@ class Player(pygame.sprite.Sprite):
                 self.reset_rect(self.rect.x + int(scaler/2), self.rect.y + int(scaler/2))
         else:
             self.reset_rect(self.rect.x, self.rect.y)
+    
+    def blur(self):
+        # TODO: this can probably be cleaned up
+        image_string = pygame.image.tostring(self.image, "RGBA", False)
+        image_bytes = Image.frombytes("RGBA", (self.image.get_width(), self.image.get_height()), image_string)
+        blurred = image_bytes.filter(ImageFilter.BLUR)
+        blurred_image = pygame.image.fromstring(blurred.tobytes(), blurred.size, blurred.mode).convert_alpha()
+        self.image = blurred_image
+        self.scale(0)
+
+    def unblur(self):
+        # TODO: this can probably be cleaned up
+        scaled = pygame.transform.scale(self.image_copy, (self.image.get_width(), self.image.get_height()))
+        self.image = scaled
+        self.scale(0)
 
     def draw(self, canvas, camera):
         # use this one if you want jiggle physics on your player movement   
@@ -43,36 +66,83 @@ class Player(pygame.sprite.Sprite):
         canvas.blit(self.image, (self.rect.x - camera.offset.x, self.rect.y - camera.offset.y))
 
     # TODO: maybe name this move_input() or something
-    def update(self, keys):
+    # TODO: refactor this to use helper functions
+    def update(self, keys, events):
         # this controls the movement of the character
+        dash = 0
+        cooldown = 40
+        space_down = False
+        space_pressed_already = False
+        
+        for dash_cd in self.dash_cooldowns:
+            if dash_cd > 0:
+                index = self.dash_cooldowns.index(dash_cd)
+                self.dash_cooldowns[index] -= 1
+        
+        # remove all the zeroes from self.dash_cooldowns
+        try:
+            while True:
+                self.dash_cooldowns.remove(0)
+        except ValueError:
+            pass
+
+        # check to see if space has been pressed down
+        for event in events:
+            if event.type == pygame.KEYDOWN and event.key == K_SPACE:
+                space_down = True
+        print(self.dash_cooldowns)
+
         if (keys[K_a] or keys[K_LEFT]) and (keys[K_d] or keys[K_RIGHT]):
             # stopping holding down left and right
             pass
         else:
             if keys[K_a] or keys[K_LEFT]:
                 # self.move(win, "left")
-                self.move("left")
+                flipped = pygame.transform.flip(self.image_copy, True, False)
+                self.image = pygame.transform.scale(flipped, (self.image.get_height(), self.image.get_width()))
+                if space_down and len(self.dash_cooldowns) < self.max_dash_charges and not space_pressed_already:
+                    dash = self.dash_speed
+                    # add a cooldown to self.dash_cooldowns
+                    self.dash_cooldowns.append(cooldown)
+                    space_pressed_already = True
+                self.move("left", dash)
             if keys[K_d] or keys[K_RIGHT]:
                 # self.move(win, "right")
-                self.move("right")
+                self.image = pygame.transform.scale(self.image_copy, (self.image.get_width(), self.image.get_height()))
+                if space_down and len(self.dash_cooldowns) < self.max_dash_charges and not space_pressed_already:
+                    dash = self.dash_speed
+                    # add a cooldown to self.dash_cooldowns
+                    self.dash_cooldowns.append(cooldown)
+                    space_pressed_already = True
+                self.move("right", dash)
         if (keys[K_w] or keys[K_UP]) and (keys[K_s] or keys[K_DOWN]):
             # stopping holding down up and down
             pass
         else:
             if keys[K_w] or keys[K_UP]:
                 # self.move(win, "up")
-                self.move("up")
+                if space_down and len(self.dash_cooldowns) < self.max_dash_charges and not space_pressed_already:
+                    dash = self.dash_speed
+                    # add a cooldown to self.dash_cooldowns
+                    self.dash_cooldowns.append(cooldown)
+                    space_pressed_already = True
+                self.move("up", dash)
             if keys[K_s] or keys[K_DOWN]:
                 # self.move(win, "down")
-                self.move("down")
+                if space_down and len(self.dash_cooldowns) < self.max_dash_charges and not space_pressed_already:
+                    dash = self.dash_speed
+                    # add a cooldown to self.dash_cooldowns
+                    self.dash_cooldowns.append(cooldown)
+                    space_pressed_already = True
+                self.move("down", dash)
 
     # def move(self, win, direction):
-    def move(self, direction):
+    def move(self, direction, extra_speed):
         if direction == "left":
-            self.rect.x -= self.move_speed
+            self.rect.x -= (self.move_speed + extra_speed)
         if direction == "right":
-            self.rect.x += self.move_speed
+            self.rect.x += (self.move_speed + extra_speed)
         if direction == "up":
-            self.rect.y -= self.move_speed
+            self.rect.y -= (self.move_speed + extra_speed)
         if direction == "down":
-            self.rect.y += self.move_speed
+            self.rect.y += (self.move_speed + extra_speed)
